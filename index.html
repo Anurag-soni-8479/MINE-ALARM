@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Alarm</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
+  <style>
+    /* ── Reset & Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0f0f14;
+      --surface:      #1a1a24;
+      --surface-2:    #22222e;
+      --border:       rgba(255,255,255,.08);
+      --border-s:     rgba(255,255,255,.14);
+      --accent:       #7c6fff;
+      --accent-dim:   rgba(124,111,255,.15);
+      --accent-glow:  rgba(124,111,255,.35);
+      --danger:       #ff5c5c;
+      --danger-dim:   rgba(255,92,92,.15);
+      --text:         #e8e8f0;
+      --text-2:       #9494a8;
+      --text-3:       #55556a;
+      --radius:       12px;
+      --radius-sm:    8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .app {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Clock Ring ──────────────────────────────────────────────── */
+    .clock-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 2rem;
+    }
+
+    .clock-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      animation: spin-slow 60s linear infinite;
+    }
+
+    @keyframes spin-slow {
+      to { transform: rotate(360deg); }
+    }
+
+    .clock-inner {
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 0.5px solid var(--border);
+    }
+
+    .clock-time {
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .clock-date {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      opacity: 0;
+      animation: pulse 3s ease-out infinite;
+    }
+
+    .pulse-ring:nth-child(2) { animation-delay: 1s; }
+    .pulse-ring:nth-child(3) { animation-delay: 2s; }
+
+    @keyframes pulse {
+      0%   { opacity: .5; transform: scale(1); }
+      100% { opacity: 0;  transform: scale(1.18); }
+    }
+
+    /* ── Form Card ───────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: .75rem;
+    }
+
+    /* ── Time input ──────────────────────────────────────────────── */
+    input[type="time"] {
+      width: 100%;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 12px 16px;
+      outline: none;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+
+    input[type="time"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(.5);
+      cursor: pointer;
+    }
+
+    /* ── Textarea ────────────────────────────────────────────────── */
+    .reason-wrap {
+      position: relative;
+      margin-top: .75rem;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 11px 14px;
+      resize: none;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    textarea::placeholder { color: var(--text-3); }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 7px;
+      opacity: .8;
+    }
+
+    /* ── Thinking dots ───────────────────────────────────────────── */
+    .thinking {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-2);
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 1.3s infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: .25s; }
+    .dot:nth-child(3) { animation-delay: .5s;  }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: .15; }
+      40%            { opacity: 1;   }
+    }
+
+    /* ── Button ──────────────────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity .15s, transform .1s;
+    }
+
+    .btn-primary:hover  { opacity: .88; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .4; cursor: default; }
+
+    /* ── Alarm list ──────────────────────────────────────────────── */
+    .list-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: .75rem;
+    }
+
+    .alarm-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .alarm-empty {
+      text-align: center;
+      padding: 2.5rem 0;
+      color: var(--text-3);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    /* ── Alarm card ──────────────────────────────────────────────── */
+    .alarm-item {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1rem 1rem 1.1rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      transition: border-color .25s, box-shadow .25s;
+    }
+
+    .alarm-item.ringing {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      animation: shake .28s infinite alternate;
+    }
+
+    @keyframes shake {
+      from { transform: translateX(-2px); }
+      to   { transform: translateX(2px);  }
+    }
+
+    .alarm-item.off { opacity: .45; }
+
+    .alarm-time {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text);
+      min-width: 58px;
+    }
+
+    .alarm-body { overflow: hidden; }
+
+    .alarm-purpose {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .alarm-desc {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Toggle ──────────────────────────────────────────────────── */
+    .toggle {
+      width: 38px; height: 22px;
+      border-radius: 11px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+
+    .toggle.on  { background: var(--accent); }
+    .toggle.off { background: var(--surface-2); border: 0.5px solid var(--border-s); }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left .2s;
+    }
+
+    .toggle.on::after  { left: 19px; }
+    .toggle.off::after { left: 3px; }
+
+    /* ── Delete btn ──────────────────────────────────────────────── */
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      font-size: 17px;
+      padding: 4px;
+      line-height: 1;
+      transition: color .15s;
+    }
+
+    .del-btn:hover { color: var(--danger); }
+
+    /* ── Modal overlay ───────────────────────────────────────────── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.72);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      backdrop-filter: blur(6px);
+    }
+
+    .overlay.show { display: flex; }
+
+    /* ── Modal box ───────────────────────────────────────────────── */
+    .modal {
+      background: var(--surface);
+      border: 0.5px solid var(--border-s);
+      border-radius: 20px;
+      padding: 2rem 1.5rem 1.5rem;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      animation: pop .25s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(.92) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0);      }
+    }
+
+    .modal-icon {
+      font-size: 44px;
+      line-height: 1;
+      margin-bottom: .75rem;
+      animation: ring-shake .4s infinite alternate;
+    }
+
+    @keyframes ring-shake {
+      from { transform: rotate(-8deg); }
+      to   { transform: rotate(8deg);  }
+    }
+
+    .modal-time {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: .25rem;
+    }
+
+    .modal-purpose {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin-bottom: .75rem;
+      text-transform: uppercase;
+    }
+
+    .modal-desc-box {
+      background: var(--surface-2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .85rem 1rem;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.65;
+      text-align: left;
+      margin-bottom: 1.25rem;
+    }
+
+    .btn-stop {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: opacity .15s;
+    }
+
+    .btn-stop:hover { opacity: .88; }
+
+    .btn-snooze {
+      width: 100%;
+      padding: 11px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-2);
+      border: 0.5px solid var(--border-s);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-snooze:hover { background: var(--surface-2); }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 440px) {
+      body { padding: 1.25rem .75rem 3rem; }
+      .clock-time { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>AI Alarm</h1>
+
+    <!-- Clock Ring -->
+    <div class="clock-wrap">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+
+      <svg class="clock-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="90" cy="90" r="82" stroke="rgba(124,111,255,.18)" stroke-width="1"/>
+        <circle cx="90" cy="90" r="82" stroke="url(#arc-grad)"
+          stroke-width="2.5" stroke-linecap="round"
+          stroke-dasharray="20 8 4 8 20 450"/>
+        <defs>
+          <linearGradient id="arc-grad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#7c6fff" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#7c6fff" stop-opacity=".1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div class="clock-inner">
+        <div class="clock-time" id="live-clock">--:--</div>
+        <div class="clock-date"  id="live-date">---</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Set Alarm Card -->
+  <div class="card">
+    <div class="card-label">Set alarm</div>
+
+    <input type="time" id="alarm-time-input" />
+
+    <div class="reason-wrap">
+      <textarea id="alarm-reason" rows="2"
+        placeholder="What's this alarm for? e.g. morning run, take medicine, team standup…"></textarea>
+      <div class="ai-badge">
+        <i class="ti ti-sparkles"></i> AI will write a motivating description
+      </div>
+      <div class="thinking" id="thinking">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span>AI is crafting your alarm…</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="set-btn" onclick="setAlarm()">
+    <i class="ti ti-bell-plus"></i> Set alarm
+  </button>
+
+  <!-- Alarms list -->
+  <div style="margin-top:1.75rem">
+    <div class="list-label">Your alarms</div>
+    <div class="alarm-list" id="alarm-list">
+      <div class="alarm-empty" id="empty-state">
+        No alarms yet.<br>Set one above and AI will explain it.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Ringing Modal -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">🔔</div>
+    <div class="modal-time"    id="modal-time">--:--</div>
+    <div class="modal-purpose" id="modal-purpose"></div>
+    <div class="modal-desc-box" id="modal-desc"></div>
+    <button class="btn-stop"   onclick="stopAlarm()">Stop alarm</button>
+    <button class="btn-snooze" onclick="snoozeAlarm()">Snooze 5 minutes</button>
+  </div>
+</div>
+
+<script>
+  /* ── State ──────────────────────────────────────────────────────── */
+  let alarms = [];
+  let ringInterval = null;
+  let activeId = null;
+
+  /* ── Helpers ────────────────────────────────────────────────────── */
+  const pad  = n => String(n).padStart(2, '0');
+  const esc  = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  /* ── Live clock ─────────────────────────────────────────────────── */
+  function updateClock() {
+    const now  = new Date();
+    document.getElementById('live-clock').textContent =
+      pad(now.getHours()) + ':' + pad(now.getMinutes());
+    document.getElementById('live-date').textContent =
+      days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+    checkAlarms(now);
+  }
+
+  updateClock();
+  setInterval(updateClock, 5000);
+
+  /* ── Anthropic API call ─────────────────────────────────────────── */
+  async function callAI(reason) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `You are a warm, motivating alarm assistant. The user set an alarm for: "${reason}".
+
+Write:
+1. purpose: A short bold label (3–6 words) naming the alarm purpose — no punctuation.
+2. description: 2–3 sentences. Be specific to their reason. Explain WHY this alarm matters, what they'll gain, and one uplifting thought to greet them when it rings.
+
+Reply ONLY with valid JSON, no markdown, no preamble:
+{"purpose":"...","description":"..."}`
+        }]
+      })
+    });
+    const data = await res.json();
+    const raw  = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    try {
+      return JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch {
+      return { purpose: reason, description: 'This alarm is here to keep you on track. You\'ve got this!' };
+    }
+  }
+
+  /* ── Set alarm ──────────────────────────────────────────────────── */
+  async function setAlarm() {
+    const timeVal = document.getElementById('alarm-time-input').value;
+    const reason  = document.getElementById('alarm-reason').value.trim();
+
+    if (!timeVal)  { alert('Please pick a time.'); return; }
+    if (!reason)   { alert('Please describe what this alarm is for.'); return; }
+
+    const btn      = document.getElementById('set-btn');
+    const thinking = document.getElementById('thinking');
+
+    btn.disabled    = true;
+    btn.innerHTML   = '<i class="ti ti-loader-2"></i> AI is thinking…';
+    thinking.style.display = 'flex';
+
+    let aiRes;
+    try {
+      aiRes = await callAI(reason);
+    } catch {
+      aiRes = { purpose: reason, description: 'Stay on track — your future self will thank you!' };
+    }
+
+    thinking.style.display = 'none';
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="ti ti-bell-plus"></i> Set alarm';
+
+    alarms.push({
+      id:          Date.now(),
+      time:        timeVal,
+      purpose:     aiRes.purpose || reason,
+      description: aiRes.description,
+      on:          true,
+      triggered:   false
+    });
+
+    document.getElementById('alarm-reason').value = '';
+    render();
+  }
+
+  /* ── Render list ─────────────────────────────────────────────────── */
+  function render() {
+    const list  = document.getElementById('alarm-list');
+    const empty = document.getElementById('empty-state');
+
+    if (alarms.length === 0) {
+      list.innerHTML = '';
+      list.appendChild(empty);
+      return;
+    }
+
+    list.innerHTML = '';
+    [...alarms].reverse().forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'alarm-item' +
+        (a.id === activeId ? ' ringing' : '') +
+        (!a.on ? ' off' : '');
+      div.id = 'alarm-' + a.id;
+      div.innerHTML = `
+        <div class="alarm-time">${esc(a.time)}</div>
+        <div class="alarm-body">
+          <div class="alarm-purpose">${esc(a.purpose)}</div>
+          <div class="alarm-desc">${esc(a.description)}</div>
+        </div>
+        <button class="toggle ${a.on ? 'on' : 'off'}"
+          onclick="toggleAlarm(${a.id})"
+          title="${a.on ? 'Alarm on' : 'Alarm off'}"></button>
+        <button class="del-btn" onclick="deleteAlarm(${a.id})" title="Delete alarm">
+          <i class="ti ti-trash"></i>
+        </button>`;
+      list.appendChild(div);
+    });
+  }
+
+  /* ── Toggle / delete ─────────────────────────────────────────────── */
+  function toggleAlarm(id) {
+    const a = alarms.find(x => x.id === id);
+    if (a) { a.on = !a.on; render(); }
+  }
+
+  function deleteAlarm(id) {
+    alarms = alarms.filter(x => x.id !== id);
+    if (activeId === id) stopAlarm();
+    render();
+  }
+
+  /* ── Check & fire ────────────────────────────────────────────────── */
+  function checkAlarms(now) {
+    const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    alarms.forEach(a => {
+      if (a.on && !a.triggered && a.time === cur) {
+        a.triggered = true;
+        fireAlarm(a);
+      }
+      if (a.time !== cur) a.triggered = false;
+    });
+  }
+
+  function fireAlarm(a) {
+    activeId = a.id;
+    document.getElementById('modal-time').textContent    = a.time;
+    document.getElementById('modal-purpose').textContent = a.purpose;
+    document.getElementById('modal-desc').textContent    = a.description;
+    document.getElementById('modal').classList.add('show');
+    render();
+    playBeep();
+    ringInterval = setInterval(playBeep, 900);
+  }
+
+  /* ── Beep ────────────────────────────────────────────────────────── */
+  function playBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o   = ctx.createOscillator();
+      const g   = ctx.createGain();
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.4, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+      o.start();
+      o.stop(ctx.currentTime + 0.45);
+    } catch {}
+  }
+
+  /* ── Stop / Snooze ───────────────────────────────────────────────── */
+  function stopAlarm() {
+    clearInterval(ringInterval);
+    ringInterval = null;
+    activeId     = null;
+    document.getElementById('modal').classList.remove('show');
+    render();
+  }
+
+  function snoozeAlarm() {
+    clearInterval(ringInterval);
+    ringInterval = null;
+    const a = alarms.find(x => x.id === activeId);
+    if (a) {
+      const [h, m] = a.time.split(':').map(Number);
+      const d = new Date();
+      d.setHours(h, m + 5, 0, 0);
+      a.time      = pad(d.getHours()) + ':' + pad(d.getMinutes());
+      a.triggered = false;
+    }
+    activeId = null;
+    document.getElementById('modal').classList.remove('show');
+    render();
+  }
+</script>
+
+</body>
+</html>
