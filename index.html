@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Alarm</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%238b7bff'/%3E%3Cstop offset='100%25' stop-color='%23ff9d6c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='%2317161f'/%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='url(%23g)' stroke-width='5'/%3E%3Cpath d='M50 24c-11 0-19 8-19 19v10l-6 9h50l-6-9V43c0-11-8-19-19-19z' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='72' r='5' fill='url(%23g)'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
   <style>
     /* ── Reset & Base ───────────────────────────────────────────── */
@@ -36,6 +37,11 @@
       --radius-sm: 9px;
     }
 
+    html {
+      background: var(--bg);
+      overscroll-behavior-y: none;
+    }
+
     body {
       background: var(--bg-grad);
       color: var(--text);
@@ -45,6 +51,7 @@
       justify-content: center;
       align-items: flex-start;
       padding: 2rem 1rem 4rem;
+      overscroll-behavior-y: none;
     }
 
     /* ── Layout ─────────────────────────────────────────────────── */
@@ -229,14 +236,166 @@
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    .ai-badge {
-      display: inline-flex;
+    /* ── Custom time picker (hour / minute / AM-PM) ───────────────── */
+    .time-picker {
+      display: flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .time-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+      padding: 4px 2px;
+      width: 56px;
+    }
+
+    .time-select option {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .time-colon {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-3);
+      margin-top: -2px;
+    }
+
+    .ampm-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .ampm-btn {
+      background: var(--surface);
+      border: 0.5px solid var(--border-s);
+      color: var(--text-2);
       font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .ampm-btn.selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ── Day repeat chips ───────────────────────────────────────────── */
+    .day-wrap {
+      margin-top: .9rem;
+    }
+
+    .day-grid {
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+    }
+
+    .day-chip {
+      flex: 1;
+      text-align: center;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+      border-radius: 50%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .day-chip.selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .day-hint {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 8px;
+    }
+
+    /* ── Drag & drop custom sound zone ─────────────────────────────── */
+    .drop-zone {
+      margin-top: 10px;
+      border: 1.5px dashed var(--border-s);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .drop-zone.has-file {
+      border-style: solid;
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .drop-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-3);
+    }
+
+    .drop-inner i {
+      font-size: 20px;
       color: var(--accent);
-      margin-top: 7px;
-      opacity: .85;
+    }
+
+    .drop-text {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .drop-file-name {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .drop-clear {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      font-size: 11px;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 4px;
     }
 
     /* ── Song picker ─────────────────────────────────────────────── */
@@ -704,14 +863,25 @@
     <div class="card">
       <div class="card-label">Set alarm</div>
 
-      <input type="time" id="alarm-time-input" />
+      <div class="time-picker">
+        <select id="hour-select" class="time-select"></select>
+        <span class="time-colon">:</span>
+        <select id="minute-select" class="time-select"></select>
+        <div class="ampm-toggle">
+          <button type="button" class="ampm-btn selected" id="am-btn" onclick="setAmPm('AM')">AM</button>
+          <button type="button" class="ampm-btn" id="pm-btn" onclick="setAmPm('PM')">PM</button>
+        </div>
+      </div>
+
+      <div class="day-wrap">
+        <div class="card-label" style="margin-bottom:.4rem">Repeat on</div>
+        <div class="day-grid" id="day-grid"></div>
+        <div class="day-hint" id="day-hint">One-time alarm — won't repeat</div>
+      </div>
 
       <div class="reason-wrap">
         <textarea id="alarm-reason" rows="2"
           placeholder="What's this alarm for? e.g. morning run, take medicine, team standup…"></textarea>
-        <div class="ai-badge">
-          <i class="ti ti-sparkles"></i> AI will write a motivating description
-        </div>
         <div class="thinking" id="thinking">
           <span class="dot"></span>
           <span class="dot"></span>
@@ -723,6 +893,14 @@
       <div class="song-wrap">
         <div class="card-label" style="margin-bottom:.4rem">Alarm tone</div>
         <div class="song-grid" id="song-grid"></div>
+
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" accept="audio/*" hidden />
+          <div class="drop-inner" id="drop-inner">
+            <i class="ti ti-upload"></i>
+            <div class="drop-text">Drag &amp; drop a song from your phone, or tap to browse</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -802,6 +980,149 @@
     updateClock();
     setInterval(updateClock, 5000);
 
+    /* ── Custom time picker (hour / minute / AM-PM) ───────────────────── */
+    let selectedAmPm = 'AM';
+
+    function setupTimePicker() {
+      const hourSel = document.getElementById('hour-select');
+      const minSel = document.getElementById('minute-select');
+      hourSel.innerHTML = '';
+      for (let h = 1; h <= 12; h++) {
+        const opt = document.createElement('option');
+        opt.value = h;
+        opt.textContent = pad(h);
+        hourSel.appendChild(opt);
+      }
+      minSel.innerHTML = '';
+      for (let m = 0; m < 60; m++) {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = pad(m);
+        minSel.appendChild(opt);
+      }
+
+      const now = new Date();
+      let h12 = now.getHours() % 12;
+      if (h12 === 0) h12 = 12;
+      hourSel.value = h12;
+      minSel.value = now.getMinutes();
+      setAmPm(now.getHours() >= 12 ? 'PM' : 'AM');
+    }
+
+    function setAmPm(val) {
+      selectedAmPm = val;
+      document.getElementById('am-btn').classList.toggle('selected', val === 'AM');
+      document.getElementById('pm-btn').classList.toggle('selected', val === 'PM');
+    }
+
+    function getSelectedTime24() {
+      let h = parseInt(document.getElementById('hour-select').value, 10);
+      const m = parseInt(document.getElementById('minute-select').value, 10);
+      if (selectedAmPm === 'AM') { if (h === 12) h = 0; }
+      else { if (h !== 12) h += 12; }
+      return pad(h) + ':' + pad(m);
+    }
+
+    function format12h(time24) {
+      let [h, m] = time24.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${pad(h)}:${pad(m)} ${ampm}`;
+    }
+
+    setupTimePicker();
+
+    /* ── Day repeat chips ──────────────────────────────────────────────── */
+    const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    let selectedDays = [];
+
+    function renderDayGrid() {
+      const grid = document.getElementById('day-grid');
+      grid.innerHTML = '';
+      DAY_LABELS.forEach((label, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'day-chip' + (selectedDays.includes(idx) ? ' selected' : '');
+        chip.textContent = label;
+        chip.title = days[idx];
+        chip.onclick = () => {
+          if (selectedDays.includes(idx)) selectedDays = selectedDays.filter(d => d !== idx);
+          else selectedDays.push(idx);
+          renderDayGrid();
+        };
+        grid.appendChild(chip);
+      });
+      document.getElementById('day-hint').textContent = selectedDays.length === 0
+        ? "One-time alarm — won't repeat"
+        : 'Repeats on ' + selectedDays.sort().map(i => days[i]).join(', ');
+    }
+    renderDayGrid();
+
+    /* ── Drag & drop custom sound from phone storage ─────────────────── */
+    let customSound = null; // { name, url }
+
+    function setupDropZone() {
+      const zone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+
+      zone.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', e => {
+        if (e.target.files && e.target.files[0]) handleSoundFile(e.target.files[0]);
+      });
+
+      ['dragenter', 'dragover'].forEach(evt =>
+        zone.addEventListener(evt, e => {
+          e.preventDefault();
+          zone.classList.add('drag-over');
+        })
+      );
+      ['dragleave', 'drop'].forEach(evt =>
+        zone.addEventListener(evt, e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+        })
+      );
+      zone.addEventListener('drop', e => {
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file && file.type.startsWith('audio/')) handleSoundFile(file);
+      });
+    }
+
+    function handleSoundFile(file) {
+      if (customSound && customSound.url) URL.revokeObjectURL(customSound.url);
+      customSound = { name: file.name, url: URL.createObjectURL(file) };
+      renderDropZone();
+    }
+
+    function clearCustomSound(e) {
+      if (e) e.stopPropagation();
+      if (customSound && customSound.url) URL.revokeObjectURL(customSound.url);
+      customSound = null;
+      document.getElementById('file-input').value = '';
+      renderDropZone();
+    }
+
+    function renderDropZone() {
+      const zone = document.getElementById('drop-zone');
+      const inner = document.getElementById('drop-inner');
+      if (customSound) {
+        zone.classList.add('has-file');
+        inner.innerHTML = `
+          <i class="ti ti-music"></i>
+          <div class="drop-file-name">${esc(customSound.name)}</div>
+          <button class="drop-clear" onclick="clearCustomSound(event)">Remove &amp; use built-in tone</button>`;
+      } else {
+        zone.classList.remove('has-file');
+        inner.innerHTML = `
+          <i class="ti ti-upload"></i>
+          <div class="drop-text">Drag &amp; drop a song from your phone, or tap to browse</div>`;
+      }
+    }
+
+    setupDropZone();
+    renderDropZone();
+
     /* ── Song picker UI ─────────────────────────────────────────────── */
     function renderSongGrid() {
       const grid = document.getElementById('song-grid');
@@ -853,10 +1174,9 @@ Reply ONLY with valid JSON, no markdown, no preamble:
 
     /* ── Set alarm ──────────────────────────────────────────────────── */
     async function setAlarm() {
-      const timeVal = document.getElementById('alarm-time-input').value;
+      const timeVal = getSelectedTime24();
       const reason = document.getElementById('alarm-reason').value.trim();
 
-      if (!timeVal) { alert('Please pick a time.'); return; }
       if (!reason) { alert('Please describe what this alarm is for.'); return; }
 
       const btn = document.getElementById('set-btn');
@@ -883,11 +1203,16 @@ Reply ONLY with valid JSON, no markdown, no preamble:
         purpose: aiRes.purpose || reason,
         description: aiRes.description,
         song: selectedSong,
+        customSound: customSound,
+        days: [...selectedDays],
         on: true,
         triggered: false
       });
 
       document.getElementById('alarm-reason').value = '';
+      customSound = null;
+      document.getElementById('file-input').value = '';
+      renderDropZone();
       render();
     }
 
@@ -910,12 +1235,18 @@ Reply ONLY with valid JSON, no markdown, no preamble:
           (a.id === activeId ? ' ringing' : '') +
           (!a.on ? ' off' : '');
         div.id = 'alarm-' + a.id;
+        const dayLabel = (a.days && a.days.length)
+          ? a.days.slice().sort().map(i => days[i]).join(' ')
+          : 'One-time';
+        const soundLabel = a.customSound
+          ? `<i class="ti ti-music"></i> ${esc(a.customSound.name)}`
+          : `<i class="ti ${song.icon}"></i> ${esc(song.name)}`;
         div.innerHTML = `
-        <div class="alarm-time">${esc(a.time)}</div>
+        <div class="alarm-time">${esc(format12h(a.time))}</div>
         <div class="alarm-body">
           <div class="alarm-purpose">${esc(a.purpose)}</div>
           <div class="alarm-desc">${esc(a.description)}</div>
-          <div class="alarm-song"><i class="ti ${song.icon}"></i> ${esc(song.name)}</div>
+          <div class="alarm-song"><i class="ti ti-repeat"></i> ${esc(dayLabel)} &nbsp;·&nbsp; ${soundLabel}</div>
         </div>
         <button class="toggle ${a.on ? 'on' : 'off'}"
           onclick="toggleAlarm(${a.id})"
@@ -942,8 +1273,10 @@ Reply ONLY with valid JSON, no markdown, no preamble:
     /* ── Check & fire ────────────────────────────────────────────────── */
     function checkAlarms(now) {
       const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
+      const curDay = now.getDay();
       alarms.forEach(a => {
-        if (a.on && !a.triggered && a.time === cur) {
+        const dayMatches = !a.days || a.days.length === 0 || a.days.includes(curDay);
+        if (a.on && !a.triggered && a.time === cur && dayMatches) {
           a.triggered = true;
           fireAlarm(a);
         }
@@ -951,17 +1284,28 @@ Reply ONLY with valid JSON, no markdown, no preamble:
       });
     }
 
+    let activeAudioEl = null;
+
     function fireAlarm(a) {
       activeId = a.id;
       const song = getSong(a.song);
-      document.getElementById('modal-time').textContent = a.time;
+      document.getElementById('modal-time').textContent = format12h(a.time);
       document.getElementById('modal-purpose').textContent = a.purpose;
-      document.getElementById('modal-song').innerHTML = `<i class="ti ${song.icon}"></i> ${esc(song.name)}`;
+      document.getElementById('modal-song').innerHTML = a.customSound
+        ? `<i class="ti ti-music"></i> ${esc(a.customSound.name)}`
+        : `<i class="ti ${song.icon}"></i> ${esc(song.name)}`;
       document.getElementById('modal-desc').textContent = a.description;
       document.getElementById('modal').classList.add('show');
       render();
-      playSong(a.song);
-      ringInterval = setInterval(() => playSong(a.song), song.notes.length * song.tempo + 500);
+
+      if (a.customSound) {
+        activeAudioEl = new Audio(a.customSound.url);
+        activeAudioEl.loop = true;
+        activeAudioEl.play().catch(() => { });
+      } else {
+        playSong(a.song);
+        ringInterval = setInterval(() => playSong(a.song), song.notes.length * song.tempo + 500);
+      }
     }
 
     /* ── Tone playback (original synthesized melodies) ────────────────── */
@@ -991,6 +1335,7 @@ Reply ONLY with valid JSON, no markdown, no preamble:
     function stopAlarm() {
       clearInterval(ringInterval);
       ringInterval = null;
+      if (activeAudioEl) { activeAudioEl.pause(); activeAudioEl = null; }
       activeId = null;
       document.getElementById('modal').classList.remove('show');
       render();
