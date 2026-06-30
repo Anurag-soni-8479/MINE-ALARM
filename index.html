@@ -1,35 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Alarm</title>
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
   <style>
     /* ── Reset & Base ───────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --bg:           #0f0f14;
-      --surface:      #1a1a24;
-      --surface-2:    #22222e;
-      --border:       rgba(255,255,255,.08);
-      --border-s:     rgba(255,255,255,.14);
-      --accent:       #7c6fff;
-      --accent-dim:   rgba(124,111,255,.15);
-      --accent-glow:  rgba(124,111,255,.35);
-      --danger:       #ff5c5c;
-      --danger-dim:   rgba(255,92,92,.15);
-      --text:         #e8e8f0;
-      --text-2:       #9494a8;
-      --text-3:       #55556a;
-      --radius:       12px;
-      --radius-sm:    8px;
+      --bg: #0c0c12;
+      --bg-grad: radial-gradient(circle at 50% -10%, #1c1830 0%, #0c0c12 55%);
+      --surface: #17161f;
+      --surface-2: #1f1e29;
+      --border: rgba(255, 255, 255, .08);
+      --border-s: rgba(255, 255, 255, .14);
+      --accent: #8b7bff;
+      --accent-2: #ff9d6c;
+      --accent-dim: rgba(139, 123, 255, .15);
+      --accent-glow: rgba(139, 123, 255, .35);
+      --danger: #ff5c5c;
+      --danger-dim: rgba(255, 92, 92, .15);
+      --text: #ededf5;
+      --text-2: #9a9ab0;
+      --text-3: #565568;
+      --radius: 14px;
+      --radius-sm: 9px;
     }
 
     body {
-      background: var(--bg);
+      background: var(--bg-grad);
       color: var(--text);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
@@ -48,23 +56,31 @@
     /* ── Header ─────────────────────────────────────────────────── */
     .header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
     .header h1 {
-      font-size: 13px;
-      letter-spacing: 3px;
+      font-size: 12px;
+      letter-spacing: 4px;
       text-transform: uppercase;
       color: var(--text-3);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
+      font-weight: 600;
     }
 
-    /* ── Clock Ring ──────────────────────────────────────────────── */
+    .header h1 span {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* ── Clock Ring (zoomed out) ───────────────────────────────────── */
     .clock-wrap {
       position: relative;
-      width: 180px;
-      height: 180px;
-      margin: 0 auto 2rem;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 1.75rem;
     }
 
     .clock-svg {
@@ -76,12 +92,14 @@
     }
 
     @keyframes spin-slow {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .clock-inner {
       position: absolute;
-      inset: 14px;
+      inset: 10px;
       border-radius: 50%;
       background: var(--surface);
       display: flex;
@@ -92,35 +110,47 @@
     }
 
     .clock-time {
-      font-size: 34px;
+      font-size: 21px;
       font-weight: 600;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       color: var(--text);
       line-height: 1;
     }
 
     .clock-date {
-      font-size: 11px;
+      font-size: 8.5px;
       color: var(--text-3);
-      margin-top: 5px;
-      letter-spacing: 1px;
+      margin-top: 4px;
+      letter-spacing: .5px;
     }
 
     .pulse-ring {
       position: absolute;
-      inset: -8px;
+      inset: -6px;
       border-radius: 50%;
-      border: 1.5px solid var(--accent);
+      border: 1.2px solid var(--accent);
       opacity: 0;
       animation: pulse 3s ease-out infinite;
     }
 
-    .pulse-ring:nth-child(2) { animation-delay: 1s; }
-    .pulse-ring:nth-child(3) { animation-delay: 2s; }
+    .pulse-ring:nth-child(2) {
+      animation-delay: 1s;
+    }
+
+    .pulse-ring:nth-child(3) {
+      animation-delay: 2s;
+    }
 
     @keyframes pulse {
-      0%   { opacity: .5; transform: scale(1); }
-      100% { opacity: 0;  transform: scale(1.18); }
+      0% {
+        opacity: .5;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.18);
+      }
     }
 
     /* ── Form Card ───────────────────────────────────────────────── */
@@ -130,6 +160,7 @@
       border-radius: var(--radius);
       padding: 1.25rem;
       margin-bottom: 1rem;
+      box-shadow: 0 10px 30px -15px rgba(0, 0, 0, .5);
     }
 
     .card-label {
@@ -138,6 +169,7 @@
       text-transform: uppercase;
       color: var(--text-3);
       margin-bottom: .75rem;
+      font-weight: 600;
     }
 
     /* ── Time input ──────────────────────────────────────────────── */
@@ -188,7 +220,9 @@
       transition: border-color .2s;
     }
 
-    textarea::placeholder { color: var(--text-3); }
+    textarea::placeholder {
+      color: var(--text-3);
+    }
 
     textarea:focus {
       border-color: var(--accent);
@@ -202,7 +236,71 @@
       font-size: 11px;
       color: var(--accent);
       margin-top: 7px;
-      opacity: .8;
+      opacity: .85;
+    }
+
+    /* ── Song picker ─────────────────────────────────────────────── */
+    .song-wrap {
+      margin-top: .9rem;
+    }
+
+    .song-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: .5rem;
+    }
+
+    .song-opt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      position: relative;
+    }
+
+    .song-opt.selected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .song-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .song-name {
+      font-size: 12px;
+      color: var(--text);
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .song-preview {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px;
+      flex-shrink: 0;
+      transition: color .15s;
+    }
+
+    .song-preview:hover {
+      color: var(--accent);
     }
 
     /* ── Thinking dots ───────────────────────────────────────────── */
@@ -216,18 +314,32 @@
     }
 
     .dot {
-      width: 5px; height: 5px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background: var(--accent);
       animation: blink 1.3s infinite;
     }
 
-    .dot:nth-child(2) { animation-delay: .25s; }
-    .dot:nth-child(3) { animation-delay: .5s;  }
+    .dot:nth-child(2) {
+      animation-delay: .25s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: .5s;
+    }
 
     @keyframes blink {
-      0%, 80%, 100% { opacity: .15; }
-      40%            { opacity: 1;   }
+
+      0%,
+      80%,
+      100% {
+        opacity: .15;
+      }
+
+      40% {
+        opacity: 1;
+      }
     }
 
     /* ── Button ──────────────────────────────────────────────────── */
@@ -235,7 +347,7 @@
       width: 100%;
       padding: 13px;
       border-radius: var(--radius-sm);
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), #6a5cf0);
       color: #fff;
       border: none;
       font-size: 15px;
@@ -248,9 +360,18 @@
       transition: opacity .15s, transform .1s;
     }
 
-    .btn-primary:hover  { opacity: .88; }
-    .btn-primary:active { transform: scale(.98); }
-    .btn-primary:disabled { opacity: .4; cursor: default; }
+    .btn-primary:hover {
+      opacity: .9;
+    }
+
+    .btn-primary:active {
+      transform: scale(.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: .4;
+      cursor: default;
+    }
 
     /* ── Alarm list ──────────────────────────────────────────────── */
     .list-label {
@@ -259,6 +380,7 @@
       text-transform: uppercase;
       color: var(--text-3);
       margin-bottom: .75rem;
+      font-weight: 600;
     }
 
     .alarm-list {
@@ -295,11 +417,18 @@
     }
 
     @keyframes shake {
-      from { transform: translateX(-2px); }
-      to   { transform: translateX(2px);  }
+      from {
+        transform: translateX(-2px);
+      }
+
+      to {
+        transform: translateX(2px);
+      }
     }
 
-    .alarm-item.off { opacity: .45; }
+    .alarm-item.off {
+      opacity: .45;
+    }
 
     .alarm-time {
       font-size: 20px;
@@ -309,7 +438,9 @@
       min-width: 58px;
     }
 
-    .alarm-body { overflow: hidden; }
+    .alarm-body {
+      overflow: hidden;
+    }
 
     .alarm-purpose {
       font-size: 13px;
@@ -331,9 +462,19 @@
       overflow: hidden;
     }
 
+    .alarm-song {
+      font-size: 10.5px;
+      color: var(--text-3);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* ── Toggle ──────────────────────────────────────────────────── */
     .toggle {
-      width: 38px; height: 22px;
+      width: 38px;
+      height: 22px;
       border-radius: 11px;
       border: none;
       cursor: pointer;
@@ -342,21 +483,33 @@
       transition: background .2s;
     }
 
-    .toggle.on  { background: var(--accent); }
-    .toggle.off { background: var(--surface-2); border: 0.5px solid var(--border-s); }
+    .toggle.on {
+      background: var(--accent);
+    }
+
+    .toggle.off {
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-s);
+    }
 
     .toggle::after {
       content: '';
       position: absolute;
       top: 3px;
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #fff;
       transition: left .2s;
     }
 
-    .toggle.on::after  { left: 19px; }
-    .toggle.off::after { left: 3px; }
+    .toggle.on::after {
+      left: 19px;
+    }
+
+    .toggle.off::after {
+      left: 3px;
+    }
 
     /* ── Delete btn ──────────────────────────────────────────────── */
     .del-btn {
@@ -370,14 +523,16 @@
       transition: color .15s;
     }
 
-    .del-btn:hover { color: var(--danger); }
+    .del-btn:hover {
+      color: var(--danger);
+    }
 
     /* ── Modal overlay ───────────────────────────────────────────── */
     .overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.72);
+      background: rgba(0, 0, 0, .72);
       z-index: 200;
       align-items: center;
       justify-content: center;
@@ -385,7 +540,9 @@
       backdrop-filter: blur(6px);
     }
 
-    .overlay.show { display: flex; }
+    .overlay.show {
+      display: flex;
+    }
 
     /* ── Modal box ───────────────────────────────────────────────── */
     .modal {
@@ -401,8 +558,15 @@
     }
 
     @keyframes pop {
-      from { opacity: 0; transform: scale(.92) translateY(10px); }
-      to   { opacity: 1; transform: scale(1) translateY(0);      }
+      from {
+        opacity: 0;
+        transform: scale(.92) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
 
     .modal-icon {
@@ -413,8 +577,13 @@
     }
 
     @keyframes ring-shake {
-      from { transform: rotate(-8deg); }
-      to   { transform: rotate(8deg);  }
+      from {
+        transform: rotate(-8deg);
+      }
+
+      to {
+        transform: rotate(8deg);
+      }
     }
 
     .modal-time {
@@ -429,8 +598,14 @@
       font-weight: 700;
       color: var(--accent);
       letter-spacing: .5px;
-      margin-bottom: .75rem;
+      margin-bottom: .25rem;
       text-transform: uppercase;
+    }
+
+    .modal-song {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-bottom: .75rem;
     }
 
     .modal-desc-box {
@@ -459,7 +634,9 @@
       transition: opacity .15s;
     }
 
-    .btn-stop:hover { opacity: .88; }
+    .btn-stop:hover {
+      opacity: .88;
+    }
 
     .btn-snooze {
       width: 100%;
@@ -473,134 +650,188 @@
       transition: background .15s;
     }
 
-    .btn-snooze:hover { background: var(--surface-2); }
+    .btn-snooze:hover {
+      background: var(--surface-2);
+    }
 
     /* ── Responsive ──────────────────────────────────────────────── */
     @media (max-width: 440px) {
-      body { padding: 1.25rem .75rem 3rem; }
-      .clock-time { font-size: 28px; }
+      body {
+        padding: 1.25rem .75rem 3rem;
+      }
+
+      .song-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>AI Alarm</h1>
+    <!-- Header -->
+    <div class="header">
+      <h1><span>AI</span> Alarm</h1>
 
-    <!-- Clock Ring -->
-    <div class="clock-wrap">
-      <div class="pulse-ring"></div>
-      <div class="pulse-ring"></div>
-      <div class="pulse-ring"></div>
+      <!-- Clock Ring -->
+      <div class="clock-wrap">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
 
-      <svg class="clock-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="90" cy="90" r="82" stroke="rgba(124,111,255,.18)" stroke-width="1"/>
-        <circle cx="90" cy="90" r="82" stroke="url(#arc-grad)"
-          stroke-width="2.5" stroke-linecap="round"
-          stroke-dasharray="20 8 4 8 20 450"/>
-        <defs>
-          <linearGradient id="arc-grad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#7c6fff" stop-opacity=".9"/>
-            <stop offset="100%" stop-color="#7c6fff" stop-opacity=".1"/>
-          </linearGradient>
-        </defs>
-      </svg>
+        <svg class="clock-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="90" cy="90" r="82" stroke="rgba(139,123,255,.18)" stroke-width="1" />
+          <circle cx="90" cy="90" r="82" stroke="url(#arc-grad)" stroke-width="2.5" stroke-linecap="round"
+            stroke-dasharray="20 8 4 8 20 450" />
+          <defs>
+            <linearGradient id="arc-grad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#8b7bff" stop-opacity=".9" />
+              <stop offset="100%" stop-color="#ff9d6c" stop-opacity=".15" />
+            </linearGradient>
+          </defs>
+        </svg>
 
-      <div class="clock-inner">
-        <div class="clock-time" id="live-clock">--:--</div>
-        <div class="clock-date"  id="live-date">---</div>
+        <div class="clock-inner">
+          <div class="clock-time" id="live-clock">--:--</div>
+          <div class="clock-date" id="live-date">---</div>
+        </div>
       </div>
+    </div>
+
+    <!-- Set Alarm Card -->
+    <div class="card">
+      <div class="card-label">Set alarm</div>
+
+      <input type="time" id="alarm-time-input" />
+
+      <div class="reason-wrap">
+        <textarea id="alarm-reason" rows="2"
+          placeholder="What's this alarm for? e.g. morning run, take medicine, team standup…"></textarea>
+        <div class="ai-badge">
+          <i class="ti ti-sparkles"></i> AI will write a motivating description
+        </div>
+        <div class="thinking" id="thinking">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span>AI is crafting your alarm…</span>
+        </div>
+      </div>
+
+      <div class="song-wrap">
+        <div class="card-label" style="margin-bottom:.4rem">Alarm tone</div>
+        <div class="song-grid" id="song-grid"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="set-btn" onclick="setAlarm()">
+      <i class="ti ti-bell-plus"></i> Set alarm
+    </button>
+
+    <!-- Alarms list -->
+    <div style="margin-top:1.75rem">
+      <div class="list-label">Your alarms</div>
+      <div class="alarm-list" id="alarm-list">
+        <div class="alarm-empty" id="empty-state">
+          No alarms yet.<br>Set one above and AI will explain it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Ringing Modal -->
+  <div class="overlay" id="modal">
+    <div class="modal">
+      <div class="modal-icon">🔔</div>
+      <div class="modal-time" id="modal-time">--:--</div>
+      <div class="modal-purpose" id="modal-purpose"></div>
+      <div class="modal-song" id="modal-song"></div>
+      <div class="modal-desc-box" id="modal-desc"></div>
+      <button class="btn-stop" onclick="stopAlarm()">Stop alarm</button>
+      <button class="btn-snooze" onclick="snoozeAlarm()">Snooze 5 minutes</button>
     </div>
   </div>
 
-  <!-- Set Alarm Card -->
-  <div class="card">
-    <div class="card-label">Set alarm</div>
+  <script>
+    /* ── Songs (original synthesized tones — no copyrighted audio) ─── */
+    const SONGS = [
+      { id: 'sunrise', name: 'Sunrise Chimes', icon: 'ti-sun', color: '#ff9d6c', notes: [523, 659, 784, 1046], tempo: 220 },
+      { id: 'ocean', name: 'Ocean Drift', icon: 'ti-wave-saw-tool', color: '#5cc8ff', notes: [392, 440, 494, 392], tempo: 320 },
+      { id: 'pulse', name: 'Pulse Beat', icon: 'ti-activity', color: '#ff5c8a', notes: [880, 880, 660, 880], tempo: 160 },
+      { id: 'forest', name: 'Forest Bell', icon: 'ti-trees', color: '#5cff9d', notes: [659, 587, 523, 659], tempo: 260 },
+      { id: 'cosmic', name: 'Cosmic Drop', icon: 'ti-moon-stars', color: '#8b7bff', notes: [1046, 880, 698, 1046], tempo: 200 },
+      { id: 'classic', name: 'Classic Ring', icon: 'ti-bell', color: '#ffd95c', notes: [880, 0, 880, 0], tempo: 240 },
+      { id: 'piano', name: 'Soft Piano', icon: 'ti-piano', color: '#c98bff', notes: [523, 659, 523, 392], tempo: 300 },
+      { id: 'marimba', name: 'Marimba Pop', icon: 'ti-music', color: '#ff8b5c', notes: [392, 523, 659, 784], tempo: 180 },
+      { id: 'crystal', name: 'Crystal Drop', icon: 'ti-diamond', color: '#5cffe0', notes: [1318, 1046, 880, 1318], tempo: 210 },
+      { id: 'digital', name: 'Digital Pulse', icon: 'ti-cpu', color: '#9affc4', notes: [659, 659, 659, 1318], tempo: 130 },
+    ];
+    let selectedSong = SONGS[0].id;
 
-    <input type="time" id="alarm-time-input" />
+    /* ── State ──────────────────────────────────────────────────────── */
+    let alarms = [];
+    let ringInterval = null;
+    let activeId = null;
 
-    <div class="reason-wrap">
-      <textarea id="alarm-reason" rows="2"
-        placeholder="What's this alarm for? e.g. morning run, take medicine, team standup…"></textarea>
-      <div class="ai-badge">
-        <i class="ti ti-sparkles"></i> AI will write a motivating description
-      </div>
-      <div class="thinking" id="thinking">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span>AI is crafting your alarm…</span>
-      </div>
-    </div>
-  </div>
+    /* ── Helpers ────────────────────────────────────────────────────── */
+    const pad = n => String(n).padStart(2, '0');
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const getSong = id => SONGS.find(s => s.id === id) || SONGS[0];
 
-  <button class="btn-primary" id="set-btn" onclick="setAlarm()">
-    <i class="ti ti-bell-plus"></i> Set alarm
-  </button>
+    /* ── Live clock ─────────────────────────────────────────────────── */
+    function updateClock() {
+      const now = new Date();
+      let hour = now.getHours();
+      const ampm = hour >= 12 ? "PM" : "AM";
 
-  <!-- Alarms list -->
-  <div style="margin-top:1.75rem">
-    <div class="list-label">Your alarms</div>
-    <div class="alarm-list" id="alarm-list">
-      <div class="alarm-empty" id="empty-state">
-        No alarms yet.<br>Set one above and AI will explain it.
-      </div>
-    </div>
-  </div>
+      hour = hour % 12;
+      if (hour === 0) hour = 12;
 
-</div>
+      document.getElementById("live-clock").textContent =
+        `${pad(hour)}:${pad(now.getMinutes())} ${ampm}`;
 
-<!-- Ringing Modal -->
-<div class="overlay" id="modal">
-  <div class="modal">
-    <div class="modal-icon">🔔</div>
-    <div class="modal-time"    id="modal-time">--:--</div>
-    <div class="modal-purpose" id="modal-purpose"></div>
-    <div class="modal-desc-box" id="modal-desc"></div>
-    <button class="btn-stop"   onclick="stopAlarm()">Stop alarm</button>
-    <button class="btn-snooze" onclick="snoozeAlarm()">Snooze 5 minutes</button>
-  </div>
-</div>
+      document.getElementById("live-date").textContent =
+        `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
 
-<script>
-  /* ── State ──────────────────────────────────────────────────────── */
-  let alarms = [];
-  let ringInterval = null;
-  let activeId = null;
+    updateClock();
+    setInterval(updateClock, 5000);
 
-  /* ── Helpers ────────────────────────────────────────────────────── */
-  const pad  = n => String(n).padStart(2, '0');
-  const esc  = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    /* ── Song picker UI ─────────────────────────────────────────────── */
+    function renderSongGrid() {
+      const grid = document.getElementById('song-grid');
+      grid.innerHTML = '';
+      SONGS.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'song-opt' + (s.id === selectedSong ? ' selected' : '');
+        div.onclick = () => { selectedSong = s.id; renderSongGrid(); };
+        div.innerHTML = `
+          <div class="song-icon" style="background:${s.color}"><i class="ti ${s.icon}"></i></div>
+          <div class="song-name">${esc(s.name)}</div>
+          <button class="song-preview" title="Preview" onclick="event.stopPropagation(); playSong('${s.id}', true)">
+            <i class="ti ti-player-play"></i>
+          </button>`;
+        grid.appendChild(div);
+      });
+    }
+    renderSongGrid();
 
-  /* ── Live clock ─────────────────────────────────────────────────── */
-  function updateClock() {
-    const now  = new Date();
-    document.getElementById('live-clock').textContent =
-      pad(now.getHours()) + ':' + pad(now.getMinutes());
-    document.getElementById('live-date').textContent =
-      days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
-    checkAlarms(now);
-  }
-
-  updateClock();
-  setInterval(updateClock, 5000);
-
-  /* ── Anthropic API call ─────────────────────────────────────────── */
-  async function callAI(reason) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `You are a warm, motivating alarm assistant. The user set an alarm for: "${reason}".
+    /* ── Anthropic API call ─────────────────────────────────────────── */
+    async function callAI(reason) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: `You are a warm, motivating alarm assistant. The user set an alarm for: "${reason}".
 
 Write:
 1. purpose: A short bold label (3–6 words) naming the alarm purpose — no punctuation.
@@ -608,80 +839,83 @@ Write:
 
 Reply ONLY with valid JSON, no markdown, no preamble:
 {"purpose":"...","description":"..."}`
-        }]
-      })
-    });
-    const data = await res.json();
-    const raw  = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    try {
-      return JSON.parse(raw.replace(/```json|```/g, '').trim());
-    } catch {
-      return { purpose: reason, description: 'This alarm is here to keep you on track. You\'ve got this!' };
-    }
-  }
-
-  /* ── Set alarm ──────────────────────────────────────────────────── */
-  async function setAlarm() {
-    const timeVal = document.getElementById('alarm-time-input').value;
-    const reason  = document.getElementById('alarm-reason').value.trim();
-
-    if (!timeVal)  { alert('Please pick a time.'); return; }
-    if (!reason)   { alert('Please describe what this alarm is for.'); return; }
-
-    const btn      = document.getElementById('set-btn');
-    const thinking = document.getElementById('thinking');
-
-    btn.disabled    = true;
-    btn.innerHTML   = '<i class="ti ti-loader-2"></i> AI is thinking…';
-    thinking.style.display = 'flex';
-
-    let aiRes;
-    try {
-      aiRes = await callAI(reason);
-    } catch {
-      aiRes = { purpose: reason, description: 'Stay on track — your future self will thank you!' };
+          }]
+        })
+      });
+      const data = await res.json();
+      const raw = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+      try {
+        return JSON.parse(raw.replace(/```json|```/g, '').trim());
+      } catch {
+        return { purpose: reason, description: 'This alarm is here to keep you on track. You\'ve got this!' };
+      }
     }
 
-    thinking.style.display = 'none';
-    btn.disabled  = false;
-    btn.innerHTML = '<i class="ti ti-bell-plus"></i> Set alarm';
+    /* ── Set alarm ──────────────────────────────────────────────────── */
+    async function setAlarm() {
+      const timeVal = document.getElementById('alarm-time-input').value;
+      const reason = document.getElementById('alarm-reason').value.trim();
 
-    alarms.push({
-      id:          Date.now(),
-      time:        timeVal,
-      purpose:     aiRes.purpose || reason,
-      description: aiRes.description,
-      on:          true,
-      triggered:   false
-    });
+      if (!timeVal) { alert('Please pick a time.'); return; }
+      if (!reason) { alert('Please describe what this alarm is for.'); return; }
 
-    document.getElementById('alarm-reason').value = '';
-    render();
-  }
+      const btn = document.getElementById('set-btn');
+      const thinking = document.getElementById('thinking');
 
-  /* ── Render list ─────────────────────────────────────────────────── */
-  function render() {
-    const list  = document.getElementById('alarm-list');
-    const empty = document.getElementById('empty-state');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ti ti-loader-2"></i> AI is thinking…';
+      thinking.style.display = 'flex';
 
-    if (alarms.length === 0) {
+      let aiRes;
+      try {
+        aiRes = await callAI(reason);
+      } catch {
+        aiRes = { purpose: reason, description: 'Stay on track — your future self will thank you!' };
+      }
+
+      thinking.style.display = 'none';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-bell-plus"></i> Set alarm';
+
+      alarms.push({
+        id: Date.now(),
+        time: timeVal,
+        purpose: aiRes.purpose || reason,
+        description: aiRes.description,
+        song: selectedSong,
+        on: true,
+        triggered: false
+      });
+
+      document.getElementById('alarm-reason').value = '';
+      render();
+    }
+
+    /* ── Render list ─────────────────────────────────────────────────── */
+    function render() {
+      const list = document.getElementById('alarm-list');
+      const empty = document.getElementById('empty-state');
+
+      if (alarms.length === 0) {
+        list.innerHTML = '';
+        list.appendChild(empty);
+        return;
+      }
+
       list.innerHTML = '';
-      list.appendChild(empty);
-      return;
-    }
-
-    list.innerHTML = '';
-    [...alarms].reverse().forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'alarm-item' +
-        (a.id === activeId ? ' ringing' : '') +
-        (!a.on ? ' off' : '');
-      div.id = 'alarm-' + a.id;
-      div.innerHTML = `
+      [...alarms].reverse().forEach(a => {
+        const song = getSong(a.song);
+        const div = document.createElement('div');
+        div.className = 'alarm-item' +
+          (a.id === activeId ? ' ringing' : '') +
+          (!a.on ? ' off' : '');
+        div.id = 'alarm-' + a.id;
+        div.innerHTML = `
         <div class="alarm-time">${esc(a.time)}</div>
         <div class="alarm-body">
           <div class="alarm-purpose">${esc(a.purpose)}</div>
           <div class="alarm-desc">${esc(a.description)}</div>
+          <div class="alarm-song"><i class="ti ${song.icon}"></i> ${esc(song.name)}</div>
         </div>
         <button class="toggle ${a.on ? 'on' : 'off'}"
           onclick="toggleAlarm(${a.id})"
@@ -689,87 +923,99 @@ Reply ONLY with valid JSON, no markdown, no preamble:
         <button class="del-btn" onclick="deleteAlarm(${a.id})" title="Delete alarm">
           <i class="ti ti-trash"></i>
         </button>`;
-      list.appendChild(div);
-    });
-  }
-
-  /* ── Toggle / delete ─────────────────────────────────────────────── */
-  function toggleAlarm(id) {
-    const a = alarms.find(x => x.id === id);
-    if (a) { a.on = !a.on; render(); }
-  }
-
-  function deleteAlarm(id) {
-    alarms = alarms.filter(x => x.id !== id);
-    if (activeId === id) stopAlarm();
-    render();
-  }
-
-  /* ── Check & fire ────────────────────────────────────────────────── */
-  function checkAlarms(now) {
-    const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
-    alarms.forEach(a => {
-      if (a.on && !a.triggered && a.time === cur) {
-        a.triggered = true;
-        fireAlarm(a);
-      }
-      if (a.time !== cur) a.triggered = false;
-    });
-  }
-
-  function fireAlarm(a) {
-    activeId = a.id;
-    document.getElementById('modal-time').textContent    = a.time;
-    document.getElementById('modal-purpose').textContent = a.purpose;
-    document.getElementById('modal-desc').textContent    = a.description;
-    document.getElementById('modal').classList.add('show');
-    render();
-    playBeep();
-    ringInterval = setInterval(playBeep, 900);
-  }
-
-  /* ── Beep ────────────────────────────────────────────────────────── */
-  function playBeep() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o   = ctx.createOscillator();
-      const g   = ctx.createGain();
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.type = 'sine';
-      o.frequency.value = 880;
-      g.gain.setValueAtTime(0.4, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-      o.start();
-      o.stop(ctx.currentTime + 0.45);
-    } catch {}
-  }
-
-  /* ── Stop / Snooze ───────────────────────────────────────────────── */
-  function stopAlarm() {
-    clearInterval(ringInterval);
-    ringInterval = null;
-    activeId     = null;
-    document.getElementById('modal').classList.remove('show');
-    render();
-  }
-
-  function snoozeAlarm() {
-    clearInterval(ringInterval);
-    ringInterval = null;
-    const a = alarms.find(x => x.id === activeId);
-    if (a) {
-      const [h, m] = a.time.split(':').map(Number);
-      const d = new Date();
-      d.setHours(h, m + 5, 0, 0);
-      a.time      = pad(d.getHours()) + ':' + pad(d.getMinutes());
-      a.triggered = false;
+        list.appendChild(div);
+      });
     }
-    activeId = null;
-    document.getElementById('modal').classList.remove('show');
-    render();
-  }
-</script>
+
+    /* ── Toggle / delete ─────────────────────────────────────────────── */
+    function toggleAlarm(id) {
+      const a = alarms.find(x => x.id === id);
+      if (a) { a.on = !a.on; render(); }
+    }
+
+    function deleteAlarm(id) {
+      alarms = alarms.filter(x => x.id !== id);
+      if (activeId === id) stopAlarm();
+      render();
+    }
+
+    /* ── Check & fire ────────────────────────────────────────────────── */
+    function checkAlarms(now) {
+      const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
+      alarms.forEach(a => {
+        if (a.on && !a.triggered && a.time === cur) {
+          a.triggered = true;
+          fireAlarm(a);
+        }
+        if (a.time !== cur) a.triggered = false;
+      });
+    }
+
+    function fireAlarm(a) {
+      activeId = a.id;
+      const song = getSong(a.song);
+      document.getElementById('modal-time').textContent = a.time;
+      document.getElementById('modal-purpose').textContent = a.purpose;
+      document.getElementById('modal-song').innerHTML = `<i class="ti ${song.icon}"></i> ${esc(song.name)}`;
+      document.getElementById('modal-desc').textContent = a.description;
+      document.getElementById('modal').classList.add('show');
+      render();
+      playSong(a.song);
+      ringInterval = setInterval(() => playSong(a.song), song.notes.length * song.tempo + 500);
+    }
+
+    /* ── Tone playback (original synthesized melodies) ────────────────── */
+    function playSong(songId, isPreview) {
+      const song = getSong(songId);
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        song.notes.forEach((freq, i) => {
+          if (!freq) return;
+          const start = ctx.currentTime + (i * song.tempo) / 1000;
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.type = isPreview ? 'triangle' : 'sine';
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(0.0001, start);
+          g.gain.exponentialRampToValueAtTime(0.35, start + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, start + song.tempo / 1000 * 0.9);
+          o.start(start);
+          o.stop(start + song.tempo / 1000);
+        });
+      } catch { }
+    }
+
+    /* ── Stop / Snooze ───────────────────────────────────────────────── */
+    function stopAlarm() {
+      clearInterval(ringInterval);
+      ringInterval = null;
+      activeId = null;
+      document.getElementById('modal').classList.remove('show');
+      render();
+    }
+
+    function snoozeAlarm() {
+      clearInterval(ringInterval);
+      ringInterval = null;
+      const a = alarms.find(x => x.id === activeId);
+      if (a) {
+        const [h, m] = a.time.split(':').map(Number);
+        const d = new Date();
+        d.setHours(h, m + 5, 0, 0);
+        a.time = pad(d.getHours()) + ':' + pad(d.getMinutes());
+        a.triggered = false;
+      }
+      activeId = null;
+      document.getElementById('modal').classList.remove('show');
+      render();
+    }
+
+    /* ── Tick: drives clock-based alarm checks ─────────────────────────── */
+    setInterval(() => checkAlarms(new Date()), 1000);
+  </script>
 
 </body>
+
 </html>
